@@ -28,8 +28,54 @@ else
 fi
  done
 done
+version="1.0"
 }
-
+if [ $# -eq 0 ]; then
+    help    
+fi
+help(){
+	echo "$0 v.$version"
+	echo
+	echo "Usage:  trash <files...>"
+	echo "        trash [options]"
+	echo "        trash [options] <file>"
+	echo
+	echo "  -h	Show this help screen"
+	echo "  -V	Show current version"
+	echo " "
+	echo "  -e	Empty trash can"
+	echo "  -p	Purge specific files from trash can"
+	echo "  -l	List files in trash can"
+	echo "  -r	Restore specific file from trash can"
+	echo "  -R	Restore ALL files from trash can"
+	echo
+	echo "To report bugs visit https://github.com/tonymorello/trash/issues"
+	echo
+	exit 1
+}
+while getopts hVvelp:r:Rc: opt;
+do
+	case $opt in
+		"h")	help
+		;;
+		"V")	echo $version
+		;;
+		"v") 	verbose="-v"
+		;;
+		"e") 	empty
+				exit 1
+		;;
+		"p")	purgelist+=($OPTARG)
+		;;
+		"l")	list
+				exit 1
+		;;
+		"r")	restorelist+=($OPTARG)
+		;;
+		"R")	restoreallfiles
+		;;
+		esac
+done
 # Get list of active torrents
 ids=${1:-"$(transmission-remote "$host" ${auth:+--auth="$auth"} --list | grep -vE 'Seeding|Stopped|Finished' | grep '^ ' | awk '{ print $1 }')"}
 
